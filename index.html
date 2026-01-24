@@ -130,12 +130,41 @@
                     </div>
                 </div>
 
-                <div id="scan-result" class="hidden retro-card p-3 bg-white relative">
-                    <p class="text-retro-orange font-black text-[10px] uppercase mb-1">Hasil:</p>
-                    <div id="scan-result-text" class="p-2 bg-slate-100 border border-black rounded font-mono text-[10px] break-all mb-2"></div>
-                    <div class="flex gap-2">
-                        <a id="scan-result-link" href="#" target="_blank" class="flex-1 hidden text-center py-1.5 bg-blue-500 text-white border-2 border-black text-[10px] font-black uppercase btn-retro">Buka</a>
-                        <button onclick="copyResult()" class="flex-1 py-1.5 bg-white border-2 border-black text-[10px] font-black uppercase btn-retro">Salin</button>
+                <div id="scan-result" class="hidden retro-card p-4 bg-white relative">
+                    <div id="wifi-result-card" class="hidden flex flex-col items-center w-full">
+                        <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-4 border-2 border-black shadow-retro">
+                            <i class="fas fa-wifi text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-sm font-black uppercase mb-4 text-center">Jaringan Wi-Fi Terdeteksi</h3>
+                        <div class="w-full space-y-2 mb-4 text-xs">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-500 uppercase text-[8px]">Nama Jaringan (SSID)</span>
+                                <span id="res-ssid" class="font-bold text-base"></span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-500 uppercase text-[8px]">Sandi</span>
+                                <div class="flex items-center justify-between bg-slate-100 p-2 rounded border border-black">
+                                    <span id="res-pass" class="font-mono font-bold"></span>
+                                    <button onclick="copyWifiPass()" class="text-retro-orange font-bold uppercase text-[8px] ml-2">Salin</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-500 uppercase text-[8px]">Keamanan</span>
+                                <span id="res-auth" class="font-bold"></span>
+                            </div>
+                        </div>
+                        <button id="btn-connect-wifi" class="w-full py-3 bg-blue-500 text-white border-2 border-black shadow-retro font-black uppercase text-xs rounded-xl btn-retro mb-2">
+                            Hubungkan ke Jaringan
+                        </button>
+                    </div>
+
+                    <div id="general-result-card" class="hidden">
+                        <p class="text-retro-orange font-black text-[10px] uppercase mb-1">Hasil Scan:</p>
+                        <div id="scan-result-text" class="p-2 bg-slate-100 border border-black rounded font-mono text-[10px] break-all mb-3"></div>
+                        <div class="flex gap-2">
+                            <a id="scan-result-link" href="#" target="_blank" class="flex-1 hidden text-center py-2 bg-blue-500 text-white border-2 border-black text-[10px] font-black uppercase btn-retro rounded-lg">Buka Link</a>
+                            <button onclick="copyResult()" class="flex-1 py-2 bg-white border-2 border-black text-[10px] font-black uppercase btn-retro rounded-lg">Salin Teks</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -149,6 +178,8 @@
     <script>
         let html5QrCode;
         let isCameraRunning = false;
+        let currentWifiString = "";
+        let currentWifiPass = "";
         const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 140, height: 140 });
 
         function switchTab(tab) {
@@ -209,17 +240,10 @@
             const qrDiv = document.getElementById('qrcode');
             const img = qrDiv.querySelector('img');
             const canvas = qrDiv.querySelector('canvas');
-            
             let url = '';
-            
-            if (img && img.src) {
-                url = img.src;
-            } else if (canvas) {
-                url = canvas.toDataURL("image/png");
-            } else {
-                alert("QR Code belum siap didownload");
-                return;
-            }
+            if (img && img.src) url = img.src;
+            else if (canvas) url = canvas.toDataURL("image/png");
+            else return alert("QR Code belum siap didownload");
 
             const link = document.createElement('a');
             link.href = url;
@@ -300,34 +324,48 @@
             stopCamera();
             document.getElementById('scan-result').classList.remove('hidden');
             
-            const resultTextDiv = document.getElementById('scan-result-text');
-            const linkBtn = document.getElementById('scan-result-link');
-            
+            const wifiCard = document.getElementById('wifi-result-card');
+            const generalCard = document.getElementById('general-result-card');
+
             if (decodedText.startsWith("WIFI:")) {
-                const ssid = decodedText.match(/S:([^;]+)/)?.[1] || 'Unknown';
-                const pass = decodedText.match(/P:([^;]+)/)?.[1] || '';
+                wifiCard.classList.remove('hidden');
+                generalCard.classList.add('hidden');
                 
-                resultTextDiv.innerHTML = `<div class="font-bold text-center">WI-FI TERDETEKSI</div><div class="mt-1">SSID: <b>${ssid}</b></div><div>Pass: <b>${pass}</b></div>`;
+                currentWifiString = decodedText;
                 
-                linkBtn.innerText = "Salin Password & Sambung";
-                linkBtn.classList.remove('hidden', 'bg-blue-500');
-                linkBtn.classList.add('bg-green-600');
+                const ssidMatch = decodedText.match(/S:([^;]+)/);
+                const passMatch = decodedText.match(/P:([^;]+)/);
+                const typeMatch = decodedText.match(/T:([^;]+)/);
                 
-                linkBtn.onclick = (e) => {
-                    e.preventDefault();
-                    navigator.clipboard.writeText(pass).then(() => {
-                        alert(`Password '${pass}' disalin! Silakan tempel di pengaturan Wi-Fi.`);
-                    });
+                const ssid = ssidMatch ? ssidMatch[1] : 'Unknown';
+                const pass = passMatch ? passMatch[1] : '';
+                const type = typeMatch ? typeMatch[1] : 'WPA';
+                
+                currentWifiPass = pass;
+                
+                document.getElementById('res-ssid').innerText = ssid;
+                document.getElementById('res-pass').innerText = pass;
+                document.getElementById('res-auth').innerText = type;
+                
+                const btnConnect = document.getElementById('btn-connect-wifi');
+                btnConnect.onclick = () => {
+                    navigator.clipboard.writeText(pass);
+                    window.location.href = decodedText;
+                    setTimeout(() => {
+                        alert(`Sandi '${pass}' telah disalin ke clipboard.\n\nJika tidak terhubung otomatis, silakan tempel sandi di pengaturan Wi-Fi.`);
+                    }, 500);
                 };
+
             } else {
-                resultTextDiv.innerText = decodedText;
+                wifiCard.classList.add('hidden');
+                generalCard.classList.remove('hidden');
+                
+                document.getElementById('scan-result-text').innerText = decodedText;
+                const linkBtn = document.getElementById('scan-result-link');
                 
                 if (isValidURL(decodedText)) {
-                    linkBtn.innerText = "Buka Link";
                     linkBtn.href = decodedText;
-                    linkBtn.classList.remove('hidden', 'bg-green-600');
-                    linkBtn.classList.add('bg-blue-500');
-                    linkBtn.onclick = null; 
+                    linkBtn.classList.remove('hidden');
                 } else {
                     linkBtn.classList.add('hidden');
                 }
@@ -338,7 +376,13 @@
 
         function copyResult() {
             const textContent = document.getElementById('scan-result-text').innerText;
-            navigator.clipboard.writeText(textContent).then(() => { alert("Disalin!"); });
+            navigator.clipboard.writeText(textContent).then(() => { alert("Teks berhasil disalin!"); });
+        }
+
+        function copyWifiPass() {
+            if(currentWifiPass) {
+                navigator.clipboard.writeText(currentWifiPass).then(() => { alert("Password Wi-Fi disalin!"); });
+            }
         }
 
         function isValidURL(string) { try { new URL(string); return true; } catch (_) { return false; } }
