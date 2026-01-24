@@ -131,30 +131,37 @@
                 </div>
 
                 <div id="scan-result" class="hidden retro-card p-4 bg-white relative">
-                    <div id="wifi-result-card" class="hidden flex flex-col items-center w-full">
-                        <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-4 border-2 border-black shadow-retro">
-                            <i class="fas fa-wifi text-white text-3xl"></i>
+                    <div id="wifi-result-card" class="hidden flex flex-col w-full text-left">
+                        <div class="flex items-center gap-3 mb-4 pb-2 border-b-2 border-black border-dashed">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border-2 border-black">
+                                <i class="fas fa-wifi text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-black uppercase">Jaringan Wi-Fi</h3>
+                                <p class="text-[10px] text-gray-500">Kredensial Jaringan Terdeteksi</p>
+                            </div>
                         </div>
-                        <h3 class="text-sm font-black uppercase mb-4 text-center">Jaringan Wi-Fi Terdeteksi</h3>
-                        <div class="w-full space-y-2 mb-4 text-xs">
+                        
+                        <div class="space-y-3 mb-4">
                             <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 uppercase text-[8px]">Nama Jaringan (SSID)</span>
+                                <span class="font-bold text-gray-500 text-[10px]">Nama jaringan:</span>
                                 <span id="res-ssid" class="font-bold text-base"></span>
                             </div>
                             <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 uppercase text-[8px]">Sandi</span>
-                                <div class="flex items-center justify-between bg-slate-100 p-2 rounded border border-black">
-                                    <span id="res-pass" class="font-mono font-bold"></span>
-                                    <button onclick="copyWifiPass()" class="text-retro-orange font-bold uppercase text-[8px] ml-2">Salin</button>
+                                <span class="font-bold text-gray-500 text-[10px]">Sandi:</span>
+                                <div class="flex items-center gap-2">
+                                    <span id="res-pass" class="font-mono text-sm"></span>
+                                    <button onclick="copyWifiPass()" class="text-[8px] px-2 py-0.5 bg-slate-200 rounded border border-black font-bold uppercase hover:bg-slate-300">Salin</button>
                                 </div>
                             </div>
                             <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 uppercase text-[8px]">Keamanan</span>
-                                <span id="res-auth" class="font-bold"></span>
+                                <span class="font-bold text-gray-500 text-[10px]">Jenis jaringan:</span>
+                                <span id="res-auth" class="font-bold text-sm"></span>
                             </div>
                         </div>
-                        <button id="btn-connect-wifi" class="w-full py-3 bg-blue-500 text-white border-2 border-black shadow-retro font-black uppercase text-xs rounded-xl btn-retro mb-2">
-                            Hubungkan ke Jaringan
+
+                        <button id="btn-connect-wifi" class="w-full py-2.5 bg-blue-600 text-white border-2 border-black shadow-retro font-bold text-sm rounded-full btn-retro flex items-center justify-center gap-2">
+                            <i class="fas fa-wifi"></i> Gabung Jaringan
                         </button>
                     </div>
 
@@ -349,11 +356,10 @@
                 
                 const btnConnect = document.getElementById('btn-connect-wifi');
                 btnConnect.onclick = () => {
-                    navigator.clipboard.writeText(pass);
+                    if (pass) {
+                        navigator.clipboard.writeText(pass);
+                    }
                     window.location.href = decodedText;
-                    setTimeout(() => {
-                        alert(`Sandi '${pass}' telah disalin ke clipboard.\n\nJika tidak terhubung otomatis, silakan tempel sandi di pengaturan Wi-Fi.`);
-                    }, 500);
                 };
 
             } else {
