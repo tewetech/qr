@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>QR Tools | Tewe Tech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,60 +13,138 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: { retro: { bg: '#f8fafc', orange: '#c2410c', dark: '#1c1917' } },
-                    boxShadow: { 'retro': '3px 3px 0px 0px rgba(0,0,0,1)', 'retro-xl': '5px 5px 0px 0px rgba(0,0,0,1)' }
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        retro: {
+                            bg: '#f8fafc',
+                            orange: '#c2410c',
+                            dark: '#1c1917',
+                            border: '#000000'
+                        }
+                    },
+                    boxShadow: {
+                        'retro': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'retro-hover': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'retro-xl': '8px 8px 0px 0px rgba(0,0,0,1)',
+                    }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #f8fafc; color: #1c1917; font-family: 'Outfit', sans-serif; height: 100vh; overflow: hidden; }
-        .bg-grid-pattern {
-            background-size: 30px 30px;
-            background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        body {
+            background-color: #f8fafc;
+            color: #1c1917;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
-        .retro-card { background-color: white; border: 3px solid #000; box-shadow: 4px 4px 0px 0px #000; border-radius: 12px; }
-        .bolt { width: 10px; height: 10px; background: #d1d5db; border: 2px solid #000; border-radius: 50%; position: absolute; }
-        .active-tab { background-color: #c2410c !important; color: white !important; }
-        input, select, textarea { border: 2px solid #000 !important; border-radius: 12px !important; font-size: 0.875rem !important; }
-        #reader { border: 3px solid #000 !important; border-radius: 12px; overflow: hidden; width: 100% !important; }
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+        .retro-card {
+            background-color: white;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0px 0px #000;
+            transition: all 0.2s ease;
+            border-radius: 24px;
+        }
+        .bolt {
+            width: 12px; height: 12px; background: #d1d5db; border: 2px solid #000; border-radius: 50%;
+            position: absolute; display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        .bolt::after { content: ""; width: 100%; height: 2px; background: #000; transform: rotate(45deg); }
+        
+        .active-tab { 
+            background-color: #c2410c !important; 
+            color: white !important; 
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #000 !important;
+        }
+        
+        input, select, textarea { 
+            border: 3px solid #000 !important; 
+            border-radius: 12px !important; 
+            font-family: 'Quicksand', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            background-color: #f8fafc;
+        }
+        input:focus, select:focus, textarea:focus {
+            background-color: #fff;
+            outline: none;
+        }
+
+        #reader { 
+            border: 4px solid #000 !important; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            width: 100% !important; 
+            box-shadow: 4px 4px 0px 0px #000;
+        }
         #reader video { object-fit: cover !important; }
-        #qrcode img { width: 140px; height: 140px; }
-        .btn-retro { border-radius: 12px !important; transition: all 0.2s; }
+        #qrcode img { width: 150px; height: 150px; border: 4px solid #000; border-radius: 8px; }
+        
+        .btn-retro { 
+            border: 4px solid #000; 
+            box-shadow: 4px 4px 0px 0px #000;
+            border-radius: 12px !important; 
+            transition: all 0.2s; 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn-retro:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #000;
+        }
+
+        #toast-container { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-2">
+<body class="flex flex-col items-center justify-center p-4">
     <div class="bg-grid-pattern"></div>
 
-    <div class="w-full max-w-md mx-auto flex flex-col h-full max-h-[95vh]">
-        <div class="text-center mb-3">
-            <h1 class="text-3xl font-black tracking-tighter uppercase italic leading-none">
+    <div class="w-full max-w-md mx-auto flex flex-col h-full max-h-[95vh] relative z-10">
+        <div class="text-center mb-4 pt-2">
+            <h1 class="text-4xl font-heading font-black tracking-tighter uppercase italic leading-none mb-1">
                 <span class="text-retro-dark">QR</span> <span class="text-retro-orange">TOOLS</span>
             </h1>
-            <p class="inline-block bg-retro-dark text-white text-[8px] font-bold px-2 py-0.5 rounded border border-black uppercase tracking-widest">QR TOOLS GENERATOR | Tewe Tech</p>
+            <div class="inline-block">
+                <p class="bg-retro-dark text-white text-[9px] font-bold px-3 py-1 rounded-md border-2 border-black uppercase tracking-widest">
+                    UTILITIES GENERATOR <span class="bg-yellow-300 text-black px-2 ml-1 border-l-2 border-black">V2.0</span>
+                </p>
+            </div>
         </div>
 
-        <div class="flex gap-2 mb-3">
-            <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-2 retro-card btn-retro font-black uppercase text-[10px] active-tab">
-                <i class="fas fa-plus-circle mr-1"></i>Buat
+        <div class="flex gap-3 mb-4 px-1">
+            <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest active-tab bg-white">
+                <i class="fas fa-plus-circle mr-2"></i>BUAT QR
             </button>
-            <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-2 retro-card btn-retro font-black uppercase text-[10px] bg-white">
-                <i class="fas fa-qrcode mr-1"></i>Scan
+            <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest bg-white hover:bg-slate-50">
+                <i class="fas fa-qrcode mr-2"></i>PINDAI
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto px-1">
-            <div id="section-generator" class="retro-card p-4 relative">
-                <div class="bolt top-2 left-2"></div><div class="bolt top-2 right-2"></div>
-                <div class="bolt bottom-2 left-2"></div><div class="bolt bottom-2 right-2"></div>
+        <div class="flex-1 overflow-y-auto px-1 pb-2 no-scrollbar">
+            <div id="section-generator" class="retro-card p-6 relative bg-white">
+                <div class="bolt top-3 left-3"></div><div class="bolt top-3 right-3"></div>
+                <div class="bolt bottom-3 left-3"></div><div class="bolt bottom-3 right-3"></div>
 
-                <div class="space-y-3">
+                <div class="space-y-4 mt-2">
                     <div>
-                        <label class="block text-[10px] font-black uppercase mb-1">Tipe</label>
-                        <select id="qr-type" onchange="changeInputType()" class="w-full p-2 bg-white outline-none font-bold">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Tipe Konten</label>
+                        <select id="qr-type" onchange="changeInputType()" class="w-full p-3 font-bold cursor-pointer">
                             <option value="link">Link / Teks</option>
                             <option value="wifi">Wi-Fi</option>
                             <option value="whatsapp">WhatsApp</option>
@@ -74,120 +152,154 @@
                     </div>
 
                     <div id="input-group-link">
-                        <input type="text" id="input-text" placeholder="Masukkan URL/Teks..." class="w-full p-2 outline-none">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">URL / Teks</label>
+                        <input type="text" id="input-text" placeholder="https://..." class="w-full p-3">
                     </div>
 
-                    <div id="input-group-wifi" class="hidden space-y-2">
-                        <input type="text" id="wifi-ssid" placeholder="Nama WiFi" class="w-full p-2 outline-none">
-                        <input type="text" id="wifi-pass" placeholder="Password" class="w-full p-2 outline-none">
-                        <select id="wifi-auth" class="w-full p-2 bg-white outline-none">
-                            <option value="WPA">WPA/WPA2</option>
-                            <option value="WEP">WEP</option>
-                            <option value="nopass">Tanpa Sandi</option>
-                        </select>
+                    <div id="input-group-wifi" class="hidden space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Nama Jaringan (SSID)</label>
+                            <input type="text" id="wifi-ssid" placeholder="MyWifi" class="w-full p-3">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Keamanan</label>
+                            <select id="wifi-auth" onchange="toggleWifiPass()" class="w-full p-3">
+                                <option value="WPA">WPA/WPA2</option>
+                                <option value="WEP">WEP</option>
+                                <option value="nopass">Tanpa Sandi</option>
+                            </select>
+                        </div>
+                        <input type="text" id="wifi-pass" placeholder="Password Wifi" class="w-full p-3">
                     </div>
 
-                    <div id="input-group-whatsapp" class="hidden space-y-2">
-                        <input type="text" id="wa-number" placeholder="Nomor (08...)" class="w-full p-2 outline-none">
-                        <textarea id="wa-msg" placeholder="Pesan..." class="w-full p-2 h-16 outline-none"></textarea>
+                    <div id="input-group-whatsapp" class="hidden space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Nomor WhatsApp</label>
+                            <input type="text" id="wa-number" placeholder="08..." class="w-full p-3">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Pesan</label>
+                            <textarea id="wa-msg" placeholder="Halo..." class="w-full p-3 h-20"></textarea>
+                        </div>
                     </div>
 
-                    <button onclick="generateQR()" class="w-full py-2.5 bg-retro-orange text-white border-2 border-black shadow-retro font-black uppercase text-xs tracking-widest btn-retro">
-                        Generate
+                    <button onclick="generateQR()" class="w-full py-3 bg-retro-orange text-white btn-retro mt-4 hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                        GENERATE QR CODE
                     </button>
                 </div>
 
-                <div id="qrcode-container" class="mt-4 flex flex-col items-center hidden border-t-2 border-black border-dashed pt-4">
-                    <div id="qrcode" class="p-2 bg-white border-2 border-black shadow-retro rounded-lg"></div>
-                    <button onclick="downloadQR()" class="mt-3 px-4 py-1.5 bg-retro-orange text-white border-2 border-black shadow-retro font-black uppercase text-[10px] btn-retro">
-                        <i class="fas fa-download mr-1"></i>Download
+                <div id="qrcode-container" class="mt-6 flex flex-col items-center hidden border-t-4 border-black border-dashed pt-6">
+                    <div class="bg-slate-100 p-4 border-4 border-black shadow-retro rounded-xl mb-4">
+                        <div id="qrcode"></div>
+                    </div>
+                    <button onclick="downloadQR()" class="px-6 py-2 bg-retro-dark text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                        <i class="fas fa-download mr-2"></i>SIMPAN GAMBAR
                     </button>
                 </div>
             </div>
 
-            <div id="section-scanner" class="hidden space-y-3">
-                <div class="flex justify-center gap-2">
-                    <button onclick="setScanMode('camera')" id="btn-mode-cam" class="flex-1 py-1.5 retro-card btn-retro bg-retro-orange text-white text-[10px] font-black uppercase">Kamera</button>
-                    <button onclick="setScanMode('file')" id="btn-mode-file" class="flex-1 py-1.5 retro-card btn-retro bg-white text-black text-[10px] font-black uppercase">File</button>
+            <div id="section-scanner" class="hidden space-y-4">
+                <div class="flex justify-center gap-3">
+                    <button onclick="setScanMode('camera')" id="btn-mode-cam" class="flex-1 py-2 btn-retro bg-retro-orange text-white text-[10px]">KAMERA</button>
+                    <button onclick="setScanMode('file')" id="btn-mode-file" class="flex-1 py-2 btn-retro bg-white text-black text-[10px]">UPLOAD FILE</button>
                 </div>
 
-                <div id="scan-camera-area" class="w-full">
-                    <div id="camera-permission-area" class="retro-card p-6 flex flex-col items-center justify-center bg-white space-y-3">
-                        <i class="fas fa-camera text-2xl text-retro-orange"></i>
-                        <p class="text-[10px] font-black uppercase text-center">Akses kamera diperlukan untuk memindai</p>
-                        <button onclick="requestCamera()" class="px-4 py-2 bg-retro-dark text-white text-[10px] font-black uppercase btn-retro">Izinkan Kamera</button>
+                <div id="scan-camera-area" class="w-full relative">
+                    <div id="camera-permission-area" class="retro-card p-8 flex flex-col items-center justify-center bg-white space-y-4 text-center">
+                        <div class="w-16 h-16 bg-slate-100 border-4 border-black rounded-full flex items-center justify-center text-retro-orange mb-2">
+                            <i class="fas fa-camera text-2xl"></i>
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-wider">Izin kamera diperlukan</p>
+                        <button onclick="requestCamera()" class="px-5 py-2 bg-retro-dark text-white text-[10px] btn-retro">IZINKAN AKSES</button>
                     </div>
-                    <div id="reader" class="bg-black hidden w-full"></div>
+                    <div id="reader" class="hidden bg-black"></div>
                 </div>
 
                 <div id="scan-file-area" class="hidden">
-                    <div class="retro-card p-6 border-dashed border-2 flex flex-col items-center justify-center bg-white relative">
+                    <div class="retro-card p-8 border-dashed border-4 flex flex-col items-center justify-center bg-white relative group cursor-pointer hover:bg-slate-50 transition">
                         <input type="file" id="qr-input-file" accept="image/*" class="hidden" onchange="scanFile(this)">
-                        <label for="qr-input-file" class="cursor-pointer text-center">
-                            <i class="fas fa-cloud-upload-alt text-2xl text-retro-orange mb-2"></i>
-                            <div class="text-[10px] font-black uppercase">Pilih Gambar</div>
+                        <label for="qr-input-file" class="cursor-pointer text-center w-full">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-retro-orange mb-3 group-hover:scale-110 transition-transform"></i>
+                            <div class="text-[10px] font-bold uppercase tracking-widest">Pilih Gambar QR</div>
                         </label>
                     </div>
                 </div>
 
-                <div id="scan-result" class="hidden retro-card p-4 bg-white relative">
-                    <div id="wifi-result-card" class="hidden flex flex-col w-full text-left">
-                        <div class="flex items-center gap-3 mb-4 pb-2 border-b-2 border-black border-dashed">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border-2 border-black">
-                                <i class="fas fa-wifi text-blue-600"></i>
+                <div id="scan-result" class="hidden retro-card p-5 bg-white relative">
+                    <div class="bolt top-2 left-2"></div><div class="bolt top-2 right-2"></div>
+                    
+                    <div id="wifi-result-card" class="hidden flex flex-col w-full pt-2">
+                        <div class="flex items-center gap-3 mb-4 border-b-4 border-black pb-3">
+                            <div class="w-12 h-12 bg-blue-500 rounded-lg border-2 border-black flex items-center justify-center text-white shadow-retro">
+                                <i class="fas fa-wifi text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-black uppercase">Jaringan Wi-Fi</h3>
-                                <p class="text-[10px] text-gray-500">Kredensial Jaringan Terdeteksi</p>
+                                <h3 class="text-xs font-bold uppercase">Wi-Fi Terdeteksi</h3>
+                                <p class="text-[8px] font-mono">Network Configuration</p>
                             </div>
                         </div>
                         
                         <div class="space-y-3 mb-4">
-                            <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 text-[10px]">Nama jaringan:</span>
-                                <span id="res-ssid" class="font-bold text-base"></span>
+                            <div class="bg-slate-50 p-2 border-2 border-black rounded-lg">
+                                <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">SSID</span>
+                                <span id="res-ssid" class="font-bold text-sm block"></span>
                             </div>
-                            <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 text-[10px]">Sandi:</span>
-                                <div class="flex items-center gap-2">
-                                    <span id="res-pass" class="font-mono text-sm"></span>
-                                    <button onclick="copyWifiPass()" class="text-[8px] px-2 py-0.5 bg-slate-200 rounded border border-black font-bold uppercase hover:bg-slate-300">Salin</button>
+                            <div id="res-pass-container" class="bg-slate-50 p-2 border-2 border-black rounded-lg flex justify-between items-center">
+                                <div>
+                                    <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">PASSWORD</span>
+                                    <span id="res-pass" class="font-mono font-bold text-sm block"></span>
                                 </div>
+                                <button onclick="copyWifiPass()" class="px-2 py-1 bg-white border-2 border-black rounded text-[8px] font-bold uppercase hover:bg-yellow-200">Salin</button>
                             </div>
-                            <div class="flex flex-col">
-                                <span class="font-bold text-gray-500 text-[10px]">Jenis jaringan:</span>
-                                <span id="res-auth" class="font-bold text-sm"></span>
+                            <div class="bg-slate-50 p-2 border-2 border-black rounded-lg">
+                                <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">TIPE KEAMANAN</span>
+                                <span id="res-auth" class="font-bold text-xs block"></span>
                             </div>
                         </div>
-
-                        <button id="btn-connect-wifi" class="w-full py-2.5 bg-blue-600 text-white border-2 border-black shadow-retro font-bold text-sm rounded-full btn-retro flex items-center justify-center gap-2">
-                            <i class="fas fa-wifi"></i> Gabung Jaringan
+                        <button id="btn-connect-wifi" class="w-full py-3 bg-blue-600 text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                            HUBUNGKAN SEKARANG
                         </button>
                     </div>
 
-                    <div id="general-result-card" class="hidden">
-                        <p class="text-retro-orange font-black text-[10px] uppercase mb-1">Hasil Scan:</p>
-                        <div id="scan-result-text" class="p-2 bg-slate-100 border border-black rounded font-mono text-[10px] break-all mb-3"></div>
+                    <div id="general-result-card" class="hidden pt-2">
+                        <p class="text-retro-orange font-bold text-[10px] uppercase mb-2 tracking-widest bg-yellow-100 inline-block px-2 border-2 border-black">HASIL PINDAI</p>
+                        <div id="scan-result-text" class="p-3 bg-slate-100 border-2 border-black rounded-lg font-mono text-[10px] break-all mb-4 h-24 overflow-y-auto"></div>
                         <div class="flex gap-2">
-                            <a id="scan-result-link" href="#" target="_blank" class="flex-1 hidden text-center py-2 bg-blue-500 text-white border-2 border-black text-[10px] font-black uppercase btn-retro rounded-lg">Buka Link</a>
-                            <button onclick="copyResult()" class="flex-1 py-2 bg-white border-2 border-black text-[10px] font-black uppercase btn-retro rounded-lg">Salin Teks</button>
+                            <a id="scan-result-link" href="#" target="_blank" class="flex-1 text-center py-2 bg-blue-500 text-white btn-retro text-[10px] hidden hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">BUKA LINK</a>
+                            <button onclick="copyResult()" class="flex-1 py-2 bg-retro-dark text-white btn-retro text-[10px] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">SALIN TEKS</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-auto py-2 text-center text-[8px] font-black uppercase tracking-widest text-slate-400">
+        <footer class="mt-auto py-3 text-center text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
             © 2026 Tewe Tech
         </footer>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 w-full max-w-[300px] text-center">
+        <div class="bg-retro-dark text-white px-4 py-3 rounded-xl shadow-retro-xl border-4 border-white text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-3">
+            <i class="fas fa-info-circle text-retro-orange text-lg"></i>
+            <span id="toast-msg">Notifikasi</span>
+        </div>
     </div>
 
     <script>
         let html5QrCode;
         let isCameraRunning = false;
-        let currentWifiString = "";
         let currentWifiPass = "";
-        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 140, height: 140 });
+        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 150, height: 150, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const txt = document.getElementById('toast-msg');
+            txt.innerText = msg;
+            container.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                container.classList.add('opacity-0', 'translate-y-4');
+            }, 3000);
+        }
 
         function switchTab(tab) {
             const genSec = document.getElementById('section-generator');
@@ -209,13 +321,27 @@
             }
         }
 
+        function toggleWifiPass() {
+            const auth = document.getElementById('wifi-auth').value;
+            const passInput = document.getElementById('wifi-pass');
+            if(auth === 'nopass') {
+                passInput.classList.add('hidden');
+                passInput.value = '';
+            } else {
+                passInput.classList.remove('hidden');
+            }
+        }
+
         function changeInputType() {
             const type = document.getElementById('qr-type').value;
             document.getElementById('input-group-link').classList.add('hidden');
             document.getElementById('input-group-wifi').classList.add('hidden');
             document.getElementById('input-group-whatsapp').classList.add('hidden');
             if (type === 'link') document.getElementById('input-group-link').classList.remove('hidden');
-            else if (type === 'wifi') document.getElementById('input-group-wifi').classList.remove('hidden');
+            else if (type === 'wifi') {
+                document.getElementById('input-group-wifi').classList.remove('hidden');
+                toggleWifiPass();
+            }
             else if (type === 'whatsapp') document.getElementById('input-group-whatsapp').classList.remove('hidden');
         }
 
@@ -224,20 +350,21 @@
             let finalData = "";
             if (type === 'link') finalData = document.getElementById('input-text').value;
             else if (type === 'wifi') {
-                const ssid = document.getElementById('wifi-ssid').value;
+                const ssid = document.getElementById('wifi-ssid').value.trim();
                 const pass = document.getElementById('wifi-pass').value;
                 const auth = document.getElementById('wifi-auth').value;
-                if (!ssid) return alert("SSID Kosong");
-                finalData = `WIFI:T:${auth};S:${ssid};P:${pass};;`;
+                if (!ssid) return showToast("SSID Kosong");
+                if (auth === 'nopass') finalData = `WIFI:T:nopass;S:${ssid};;`;
+                else finalData = `WIFI:T:${auth};S:${ssid};P:${pass};;`;
             } else if (type === 'whatsapp') {
                 let number = document.getElementById('wa-number').value;
                 const msg = document.getElementById('wa-msg').value;
-                if (!number) return alert("No HP Kosong");
+                if (!number) return showToast("No HP Kosong");
                 number = number.replace(/[^0-9]/g, '');
                 if (number.startsWith('0')) number = '62' + number.slice(1);
                 finalData = `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
             }
-            if (!finalData) return alert("Data Kosong");
+            if (!finalData) return showToast("Data Kosong");
             qrcodeObj.clear();
             qrcodeObj.makeCode(finalData);
             document.getElementById('qrcode-container').classList.remove('hidden');
@@ -250,8 +377,7 @@
             let url = '';
             if (img && img.src) url = img.src;
             else if (canvas) url = canvas.toDataURL("image/png");
-            else return alert("QR Code belum siap didownload");
-
+            else return showToast("QR Code belum siap");
             const link = document.createElement('a');
             link.href = url;
             link.download = 'qr-tewe.png';
@@ -267,7 +393,6 @@
             const fileArea = document.getElementById('scan-file-area');
             const btnCam = document.getElementById('btn-mode-cam');
             const btnFile = document.getElementById('btn-mode-file');
-            
             if (mode === 'camera') {
                 camArea.classList.remove('hidden');
                 fileArea.classList.add('hidden');
@@ -307,7 +432,7 @@
                 console.error(err);
                 document.getElementById('camera-permission-area').classList.remove('hidden');
                 document.getElementById('reader').classList.add('hidden');
-                alert("Gagal mengakses kamera");
+                showToast("Gagal mengakses kamera");
             });
         }
 
@@ -324,51 +449,46 @@
         function scanFile(input) {
             if (input.files.length === 0) return;
             initScanner();
-            html5QrCode.scanFile(input.files[0], true).then(onScanSuccess).catch(err => { alert("Gagal scan file"); });
+            html5QrCode.scanFile(input.files[0], true).then(onScanSuccess).catch(err => { showToast("Gagal scan file"); });
         }
 
         function onScanSuccess(decodedText) {
             stopCamera();
             document.getElementById('scan-result').classList.remove('hidden');
-            
             const wifiCard = document.getElementById('wifi-result-card');
             const generalCard = document.getElementById('general-result-card');
-
             if (decodedText.startsWith("WIFI:")) {
                 wifiCard.classList.remove('hidden');
                 generalCard.classList.add('hidden');
-                
-                currentWifiString = decodedText;
-                
                 const ssidMatch = decodedText.match(/S:([^;]+)/);
                 const passMatch = decodedText.match(/P:([^;]+)/);
                 const typeMatch = decodedText.match(/T:([^;]+)/);
-                
-                const ssid = ssidMatch ? ssidMatch[1] : 'Unknown';
-                const pass = passMatch ? passMatch[1] : '';
+                let ssid = ssidMatch ? ssidMatch[1] : 'Unknown';
+                ssid = ssid.replace(/^"(.*)"$/, '$1');
+                try { ssid = decodeURIComponent(ssid); } catch(e) {}
+                let pass = passMatch ? passMatch[1] : '';
+                pass = pass.replace(/^"(.*)"$/, '$1');
                 const type = typeMatch ? typeMatch[1] : 'WPA';
-                
                 currentWifiPass = pass;
-                
                 document.getElementById('res-ssid').innerText = ssid;
                 document.getElementById('res-pass').innerText = pass;
                 document.getElementById('res-auth').innerText = type;
-                
+                if (type.toLowerCase() === 'nopass' || !pass) {
+                    document.getElementById('res-pass-container').classList.add('hidden');
+                } else {
+                    document.getElementById('res-pass-container').classList.remove('hidden');
+                }
                 const btnConnect = document.getElementById('btn-connect-wifi');
                 btnConnect.onclick = () => {
-                    if (pass) {
-                        navigator.clipboard.writeText(pass);
-                    }
+                    navigator.clipboard.writeText(pass);
                     window.location.href = decodedText;
+                    showToast(`Sandi tersalin. Tempel di pengaturan Wi-Fi.`);
                 };
-
             } else {
                 wifiCard.classList.add('hidden');
                 generalCard.classList.remove('hidden');
-                
                 document.getElementById('scan-result-text').innerText = decodedText;
                 const linkBtn = document.getElementById('scan-result-link');
-                
                 if (isValidURL(decodedText)) {
                     linkBtn.href = decodedText;
                     linkBtn.classList.remove('hidden');
@@ -382,12 +502,12 @@
 
         function copyResult() {
             const textContent = document.getElementById('scan-result-text').innerText;
-            navigator.clipboard.writeText(textContent).then(() => { alert("Teks berhasil disalin!"); });
+            navigator.clipboard.writeText(textContent).then(() => { showToast("Teks berhasil disalin!"); });
         }
 
         function copyWifiPass() {
             if(currentWifiPass) {
-                navigator.clipboard.writeText(currentWifiPass).then(() => { alert("Password Wi-Fi disalin!"); });
+                navigator.clipboard.writeText(currentWifiPass).then(() => { showToast("Password Wi-Fi disalin!"); });
             }
         }
 
