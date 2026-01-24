@@ -299,25 +299,49 @@
         function onScanSuccess(decodedText) {
             stopCamera();
             document.getElementById('scan-result').classList.remove('hidden');
-            document.getElementById('scan-result-text').innerText = decodedText;
-            const linkEl = document.getElementById('scan-result-link');
-            if (isValidURL(decodedText)) {
-                linkEl.href = decodedText;
-                linkEl.classList.remove('hidden');
+            
+            const resultTextDiv = document.getElementById('scan-result-text');
+            const linkBtn = document.getElementById('scan-result-link');
+            
+            if (decodedText.startsWith("WIFI:")) {
+                const ssid = decodedText.match(/S:([^;]+)/)?.[1] || 'Unknown';
+                const pass = decodedText.match(/P:([^;]+)/)?.[1] || '';
+                
+                resultTextDiv.innerHTML = `<div class="font-bold text-center">WI-FI TERDETEKSI</div><div class="mt-1">SSID: <b>${ssid}</b></div><div>Pass: <b>${pass}</b></div>`;
+                
+                linkBtn.innerText = "Salin Password & Sambung";
+                linkBtn.classList.remove('hidden', 'bg-blue-500');
+                linkBtn.classList.add('bg-green-600');
+                
+                linkBtn.onclick = (e) => {
+                    e.preventDefault();
+                    navigator.clipboard.writeText(pass).then(() => {
+                        alert(`Password '${pass}' disalin! Silakan tempel di pengaturan Wi-Fi.`);
+                    });
+                };
             } else {
-                linkEl.classList.add('hidden');
+                resultTextDiv.innerText = decodedText;
+                
+                if (isValidURL(decodedText)) {
+                    linkBtn.innerText = "Buka Link";
+                    linkBtn.href = decodedText;
+                    linkBtn.classList.remove('hidden', 'bg-green-600');
+                    linkBtn.classList.add('bg-blue-500');
+                    linkBtn.onclick = null; 
+                } else {
+                    linkBtn.classList.add('hidden');
+                }
             }
         }
 
         function onScanFailure(error) {}
 
         function copyResult() {
-            const text = document.getElementById('scan-result-text').innerText;
-            navigator.clipboard.writeText(text).then(() => { alert("Disalin!"); });
+            const textContent = document.getElementById('scan-result-text').innerText;
+            navigator.clipboard.writeText(textContent).then(() => { alert("Disalin!"); });
         }
 
         function isValidURL(string) { try { new URL(string); return true; } catch (_) { return false; } }
     </script>
 </body>
 </html>
-
