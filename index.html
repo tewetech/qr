@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Tools | Tewe Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { retro: { bg: '#f8fafc', orange: '#c2410c', dark: '#1c1917' } },
+                    boxShadow: { 'retro': '3px 3px 0px 0px rgba(0,0,0,1)', 'retro-xl': '5px 5px 0px 0px rgba(0,0,0,1)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; color: #1c1917; font-family: 'Outfit', sans-serif; height: 100vh; overflow: hidden; }
+        .bg-grid-pattern {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        }
+        .retro-card { background-color: white; border: 3px solid #000; box-shadow: 4px 4px 0px 0px #000; border-radius: 12px; }
+        .bolt { width: 10px; height: 10px; background: #d1d5db; border: 2px solid #000; border-radius: 50%; position: absolute; }
+        .active-tab { background-color: #c2410c !important; color: white !important; }
+        input, select, textarea { border: 2px solid #000 !important; border-radius: 12px !important; font-size: 0.875rem !important; }
+        #reader { border: 3px solid #000 !important; border-radius: 12px; overflow: hidden; width: 100% !important; }
+        #reader video { object-fit: cover !important; }
+        #qrcode img { width: 140px; height: 140px; }
+        .btn-retro { border-radius: 12px !important; transition: all 0.2s; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-2">
+    <div class="bg-grid-pattern"></div>
+
+    <div class="w-full max-w-md mx-auto flex flex-col h-full max-h-[95vh]">
+        <div class="text-center mb-3">
+            <h1 class="text-3xl font-black tracking-tighter uppercase italic leading-none">
+                <span class="text-retro-dark">QR</span> <span class="text-retro-orange">TOOLS</span>
+            </h1>
+            <p class="inline-block bg-retro-dark text-white text-[8px] font-bold px-2 py-0.5 rounded border border-black uppercase tracking-widest">QR TOOLS GENERATOR | Tewe Tech</p>
+        </div>
+
+        <div class="flex gap-2 mb-3">
+            <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-2 retro-card btn-retro font-black uppercase text-[10px] active-tab">
+                <i class="fas fa-plus-circle mr-1"></i>Buat
+            </button>
+            <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-2 retro-card btn-retro font-black uppercase text-[10px] bg-white">
+                <i class="fas fa-qrcode mr-1"></i>Scan
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-1">
+            <div id="section-generator" class="retro-card p-4 relative">
+                <div class="bolt top-2 left-2"></div><div class="bolt top-2 right-2"></div>
+                <div class="bolt bottom-2 left-2"></div><div class="bolt bottom-2 right-2"></div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase mb-1">Tipe</label>
+                        <select id="qr-type" onchange="changeInputType()" class="w-full p-2 bg-white outline-none font-bold">
+                            <option value="link">Link / Teks</option>
+                            <option value="wifi">Wi-Fi</option>
+                            <option value="whatsapp">WhatsApp</option>
+                        </select>
+                    </div>
+
+                    <div id="input-group-link">
+                        <input type="text" id="input-text" placeholder="Masukkan URL/Teks..." class="w-full p-2 outline-none">
+                    </div>
+
+                    <div id="input-group-wifi" class="hidden space-y-2">
+                        <input type="text" id="wifi-ssid" placeholder="Nama WiFi" class="w-full p-2 outline-none">
+                        <input type="text" id="wifi-pass" placeholder="Password" class="w-full p-2 outline-none">
+                        <select id="wifi-auth" class="w-full p-2 bg-white outline-none">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">Tanpa Sandi</option>
+                        </select>
+                    </div>
+
+                    <div id="input-group-whatsapp" class="hidden space-y-2">
+                        <input type="text" id="wa-number" placeholder="Nomor (08...)" class="w-full p-2 outline-none">
+                        <textarea id="wa-msg" placeholder="Pesan..." class="w-full p-2 h-16 outline-none"></textarea>
+                    </div>
+
+                    <button onclick="generateQR()" class="w-full py-2.5 bg-retro-orange text-white border-2 border-black shadow-retro font-black uppercase text-xs tracking-widest btn-retro">
+                        Generate
+                    </button>
+                </div>
+
+                <div id="qrcode-container" class="mt-4 flex flex-col items-center hidden border-t-2 border-black border-dashed pt-4">
+                    <div id="qrcode" class="p-2 bg-white border-2 border-black shadow-retro rounded-lg"></div>
+                    <button onclick="downloadQR()" class="mt-3 px-4 py-1.5 bg-retro-orange text-white border-2 border-black shadow-retro font-black uppercase text-[10px] btn-retro">
+                        <i class="fas fa-download mr-1"></i>Download
+                    </button>
+                </div>
+            </div>
+
+            <div id="section-scanner" class="hidden space-y-3">
+                <div class="flex justify-center gap-2">
+                    <button onclick="setScanMode('camera')" id="btn-mode-cam" class="flex-1 py-1.5 retro-card btn-retro bg-retro-orange text-white text-[10px] font-black uppercase">Kamera</button>
+                    <button onclick="setScanMode('file')" id="btn-mode-file" class="flex-1 py-1.5 retro-card btn-retro bg-white text-black text-[10px] font-black uppercase">File</button>
+                </div>
+
+                <div id="scan-camera-area" class="w-full">
+                    <div id="camera-permission-area" class="retro-card p-6 flex flex-col items-center justify-center bg-white space-y-3">
+                        <i class="fas fa-camera text-2xl text-retro-orange"></i>
+                        <p class="text-[10px] font-black uppercase text-center">Akses kamera diperlukan untuk memindai</p>
+                        <button onclick="requestCamera()" class="px-4 py-2 bg-retro-dark text-white text-[10px] font-black uppercase btn-retro">Izinkan Kamera</button>
+                    </div>
+                    <div id="reader" class="bg-black hidden w-full"></div>
+                </div>
+
+                <div id="scan-file-area" class="hidden">
+                    <div class="retro-card p-6 border-dashed border-2 flex flex-col items-center justify-center bg-white relative">
+                        <input type="file" id="qr-input-file" accept="image/*" class="hidden" onchange="scanFile(this)">
+                        <label for="qr-input-file" class="cursor-pointer text-center">
+                            <i class="fas fa-cloud-upload-alt text-2xl text-retro-orange mb-2"></i>
+                            <div class="text-[10px] font-black uppercase">Pilih Gambar</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="scan-result" class="hidden retro-card p-3 bg-white relative">
+                    <p class="text-retro-orange font-black text-[10px] uppercase mb-1">Hasil:</p>
+                    <div id="scan-result-text" class="p-2 bg-slate-100 border border-black rounded font-mono text-[10px] break-all mb-2"></div>
+                    <div class="flex gap-2">
+                        <a id="scan-result-link" href="#" target="_blank" class="flex-1 hidden text-center py-1.5 bg-blue-500 text-white border-2 border-black text-[10px] font-black uppercase btn-retro">Buka</a>
+                        <button onclick="copyResult()" class="flex-1 py-1.5 bg-white border-2 border-black text-[10px] font-black uppercase btn-retro">Salin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-auto py-2 text-center text-[8px] font-black uppercase tracking-widest text-slate-400">
+            © 2026 Tewe Tech
+        </footer>
+    </div>
+
+    <script>
+        let html5QrCode;
+        let isCameraRunning = false;
+        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 140, height: 140 });
+
+        function switchTab(tab) {
+            const genSec = document.getElementById('section-generator');
+            const scanSec = document.getElementById('section-scanner');
+            const btnGen = document.getElementById('btn-tab-gen');
+            const btnScan = document.getElementById('btn-tab-scan');
+            if (tab === 'gen') {
+                genSec.classList.remove('hidden');
+                scanSec.classList.add('hidden');
+                btnGen.classList.add('active-tab');
+                btnScan.classList.remove('active-tab');
+                stopCamera();
+            } else {
+                genSec.classList.add('hidden');
+                scanSec.classList.remove('hidden');
+                btnGen.classList.remove('active-tab');
+                btnScan.classList.add('active-tab');
+                setScanMode('camera'); 
+            }
+        }
+
+        function changeInputType() {
+            const type = document.getElementById('qr-type').value;
+            document.getElementById('input-group-link').classList.add('hidden');
+            document.getElementById('input-group-wifi').classList.add('hidden');
+            document.getElementById('input-group-whatsapp').classList.add('hidden');
+            if (type === 'link') document.getElementById('input-group-link').classList.remove('hidden');
+            else if (type === 'wifi') document.getElementById('input-group-wifi').classList.remove('hidden');
+            else if (type === 'whatsapp') document.getElementById('input-group-whatsapp').classList.remove('hidden');
+        }
+
+        function generateQR() {
+            const type = document.getElementById('qr-type').value;
+            let finalData = "";
+            if (type === 'link') finalData = document.getElementById('input-text').value;
+            else if (type === 'wifi') {
+                const ssid = document.getElementById('wifi-ssid').value;
+                const pass = document.getElementById('wifi-pass').value;
+                const auth = document.getElementById('wifi-auth').value;
+                if (!ssid) return alert("SSID Kosong");
+                finalData = `WIFI:T:${auth};S:${ssid};P:${pass};;`;
+            } else if (type === 'whatsapp') {
+                let number = document.getElementById('wa-number').value;
+                const msg = document.getElementById('wa-msg').value;
+                if (!number) return alert("No HP Kosong");
+                number = number.replace(/[^0-9]/g, '');
+                if (number.startsWith('0')) number = '62' + number.slice(1);
+                finalData = `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
+            }
+            if (!finalData) return alert("Data Kosong");
+            qrcodeObj.clear();
+            qrcodeObj.makeCode(finalData);
+            document.getElementById('qrcode-container').classList.remove('hidden');
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            if (img) {
+                const link = document.createElement('a');
+                link.download = 'qr-tewe.png';
+                link.href = img.src;
+                link.click();
+            }
+        }
+
+        function initScanner() { if (!html5QrCode) html5QrCode = new Html5Qrcode("reader"); }
+
+        function setScanMode(mode) {
+            const camArea = document.getElementById('scan-camera-area');
+            const fileArea = document.getElementById('scan-file-area');
+            const btnCam = document.getElementById('btn-mode-cam');
+            const btnFile = document.getElementById('btn-mode-file');
+            
+            if (mode === 'camera') {
+                camArea.classList.remove('hidden');
+                fileArea.classList.add('hidden');
+                btnCam.classList.add('bg-retro-orange', 'text-white');
+                btnCam.classList.remove('bg-white', 'text-black');
+                btnFile.classList.remove('bg-retro-orange', 'text-white');
+                btnFile.classList.add('bg-white', 'text-black');
+            } else {
+                camArea.classList.add('hidden');
+                fileArea.classList.remove('hidden');
+                btnFile.classList.add('bg-retro-orange', 'text-white');
+                btnFile.classList.remove('bg-white', 'text-black');
+                btnCam.classList.remove('bg-retro-orange', 'text-white');
+                btnCam.classList.add('bg-white', 'text-black');
+                stopCamera();
+            }
+            document.getElementById('scan-result').classList.add('hidden');
+        }
+
+        function requestCamera() {
+            document.getElementById('camera-permission-area').classList.add('hidden');
+            document.getElementById('reader').classList.remove('hidden');
+            startCamera();
+        }
+
+        function startCamera() {
+            if (isCameraRunning) return;
+            initScanner();
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 15, qrbox: (width, height) => { return { width: width * 0.8, height: width * 0.8 }; } }, 
+                onScanSuccess, 
+                onScanFailure
+            )
+            .then(() => { isCameraRunning = true; })
+            .catch(err => { 
+                console.error(err);
+                document.getElementById('camera-permission-area').classList.remove('hidden');
+                document.getElementById('reader').classList.add('hidden');
+                alert("Gagal mengakses kamera");
+            });
+        }
+
+        function stopCamera() {
+            if (html5QrCode && isCameraRunning) {
+                html5QrCode.stop().then(() => { 
+                    isCameraRunning = false; 
+                    document.getElementById('camera-permission-area').classList.remove('hidden');
+                    document.getElementById('reader').classList.add('hidden');
+                });
+            }
+        }
+
+        function scanFile(input) {
+            if (input.files.length === 0) return;
+            initScanner();
+            html5QrCode.scanFile(input.files[0], true).then(onScanSuccess).catch(err => { alert("Gagal scan file"); });
+        }
+
+        function onScanSuccess(decodedText) {
+            stopCamera();
+            document.getElementById('scan-result').classList.remove('hidden');
+            document.getElementById('scan-result-text').innerText = decodedText;
+            const linkEl = document.getElementById('scan-result-link');
+            if (isValidURL(decodedText)) {
+                linkEl.href = decodedText;
+                linkEl.classList.remove('hidden');
+            } else {
+                linkEl.classList.add('hidden');
+            }
+        }
+
+        function onScanFailure(error) {}
+
+        function copyResult() {
+            const text = document.getElementById('scan-result-text').innerText;
+            navigator.clipboard.writeText(text).then(() => { alert("Disalin!"); });
+        }
+
+        function isValidURL(string) { try { new URL(string); return true; } catch (_) { return false; } }
+    </script>
+</body>
+</html>
