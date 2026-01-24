@@ -149,7 +149,7 @@
     <script>
         let html5QrCode;
         let isCameraRunning = false;
-        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 140, height: 140 });
+        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 1000, height: 1000 });
 
         function switchTab(tab) {
             const genSec = document.getElementById('section-generator');
@@ -206,13 +206,27 @@
         }
 
         function downloadQR() {
-            const img = document.querySelector('#qrcode img');
-            if (img) {
-                const link = document.createElement('a');
-                link.download = 'qr-tewe.png';
-                link.href = img.src;
-                link.click();
+            const qrDiv = document.getElementById('qrcode');
+            const img = qrDiv.querySelector('img');
+            const canvas = qrDiv.querySelector('canvas');
+            
+            let url = '';
+            
+            if (img && img.src) {
+                url = img.src;
+            } else if (canvas) {
+                url = canvas.toDataURL("image/png");
+            } else {
+                alert("QR Code belum siap didownload");
+                return;
             }
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'qr-tewe.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function initScanner() { if (!html5QrCode) html5QrCode = new Html5Qrcode("reader"); }
