@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>QR Tools | Tewe Tech</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/favicon/refs/heads/main/fav-qr.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/favicon/refs/heads/main/qris.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -95,7 +100,6 @@
             box-shadow: 4px 4px 0px 0px #000;
         }
         #reader video { object-fit: cover !important; }
-        #qrcode img { width: 150px; height: 150px; border: 4px solid #000; border-radius: 8px; }
         
         .btn-retro { 
             border: 4px solid #000; 
@@ -123,14 +127,14 @@
             </h1>
             <div class="inline-block">
                 <p class="bg-retro-dark text-white text-[9px] font-bold px-3 py-1 rounded-md border-2 border-black uppercase tracking-widest">
-                    UTILITIES GENERATOR <span class="bg-yellow-300 text-black px-2 ml-1 border-l-2 border-black">V2.0</span>
+                    UTILITIES GENERATOR <span class="bg-yellow-300 text-black px-2 ml-1 border-l-2 border-black">V2.1</span>
                 </p>
             </div>
         </div>
 
         <div class="flex gap-3 mb-4 px-1">
             <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest active-tab bg-white">
-                <i class="fas fa-plus-circle mr-2"></i>BUAT QR
+                <i class="fas fa-plus-circle mr-2"></i>BUAT KODE
             </button>
             <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest bg-white hover:bg-slate-50">
                 <i class="fas fa-qrcode mr-2"></i>PINDAI
@@ -143,18 +147,30 @@
                 <div class="bolt bottom-3 left-3"></div><div class="bolt bottom-3 right-3"></div>
 
                 <div class="space-y-4 mt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Tipe Konten</label>
-                        <select id="qr-type" onchange="changeInputType()" class="w-full p-3 font-bold cursor-pointer">
-                            <option value="link">Link / Teks</option>
-                            <option value="wifi">Wi-Fi</option>
-                            <option value="whatsapp">WhatsApp</option>
-                        </select>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Tipe Konten</label>
+                            <select id="qr-type" onchange="changeInputType()" class="w-full p-3 font-bold cursor-pointer">
+                                <option value="link">Link / Teks</option>
+                                <option value="wifi">Wi-Fi</option>
+                                <option value="whatsapp">WhatsApp</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Format Output</label>
+                            <select id="output-format" class="w-full p-3 font-bold cursor-pointer">
+                                <option value="qr">QR Code</option>
+                                <option value="barcode">Barcode</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div id="input-group-link">
-                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">URL / Teks</label>
-                        <input type="text" id="input-text" placeholder="https://..." class="w-full p-3">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1 flex justify-between">
+                            <span>URL / Teks</span>
+                            <span class="text-retro-orange opacity-80">(Bisa multi baris)</span>
+                        </label>
+                        <textarea id="input-text" placeholder="Data 1&#10;Data 2&#10;Data 3..." class="w-full p-3 h-24 whitespace-pre-wrap"></textarea>
                     </div>
 
                     <div id="input-group-wifi" class="hidden space-y-3">
@@ -185,16 +201,17 @@
                     </div>
 
                     <button onclick="generateQR()" class="w-full py-3 bg-retro-orange text-white btn-retro mt-4 hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
-                        GENERATE QR CODE
+                        GENERATE SEKARANG
                     </button>
                 </div>
 
                 <div id="qrcode-container" class="mt-6 flex flex-col items-center hidden border-t-4 border-black border-dashed pt-6">
-                    <div class="bg-slate-100 p-4 border-4 border-black shadow-retro rounded-xl mb-4">
-                        <div id="qrcode"></div>
+                    <div class="bg-slate-100 p-4 border-4 border-black shadow-retro rounded-xl mb-3 flex justify-center w-full min-h-[160px] items-center">
+                        <div id="qrcode" class="flex justify-center w-full"></div>
                     </div>
-                    <button onclick="downloadQR()" class="px-6 py-2 bg-retro-dark text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
-                        <i class="fas fa-download mr-2"></i>SIMPAN GAMBAR
+                    <div id="bulk-info" class="text-[10px] font-bold uppercase tracking-widest mb-4 bg-yellow-300 px-3 py-1 border-2 border-black rounded hidden"></div>
+                    <button onclick="downloadQR()" class="px-6 py-2 bg-retro-dark text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] w-full">
+                        <i class="fas fa-download mr-2"></i>UNDUH HASIL
                     </button>
                 </div>
             </div>
@@ -221,7 +238,7 @@
                         <input type="file" id="qr-input-file" accept="image/*" class="hidden" onchange="scanFile(this)">
                         <label for="qr-input-file" class="cursor-pointer text-center w-full">
                             <i class="fas fa-cloud-upload-alt text-4xl text-retro-orange mb-3 group-hover:scale-110 transition-transform"></i>
-                            <div class="text-[10px] font-bold uppercase tracking-widest">Pilih Gambar QR</div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest">Pilih Gambar</div>
                         </label>
                     </div>
                 </div>
@@ -290,7 +307,8 @@
         let html5QrCode;
         let isCameraRunning = false;
         let currentWifiPass = "";
-        const qrcodeObj = new QRCode(document.getElementById("qrcode"), { width: 150, height: 150, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+        let generatedImages = [];
+        let generationCount = 0;
 
         function showToast(msg) {
             const container = document.getElementById('toast-container');
@@ -348,43 +366,102 @@
 
         function generateQR() {
             const type = document.getElementById('qr-type').value;
-            let finalData = "";
-            if (type === 'link') finalData = document.getElementById('input-text').value;
-            else if (type === 'wifi') {
+            const format = document.getElementById('output-format').value;
+            let dataArray = [];
+
+            if (type === 'link') {
+                const rawText = document.getElementById('input-text').value;
+                dataArray = rawText.split('\n').map(t => t.trim()).filter(t => t !== '');
+            } else if (type === 'wifi') {
                 const ssid = document.getElementById('wifi-ssid').value.trim();
                 const pass = document.getElementById('wifi-pass').value;
                 const auth = document.getElementById('wifi-auth').value;
                 if (!ssid) return showToast("SSID Kosong");
-                if (auth === 'nopass') finalData = `WIFI:T:nopass;S:${ssid};;`;
-                else finalData = `WIFI:T:${auth};S:${ssid};P:${pass};;`;
+                let finalData = (auth === 'nopass') ? `WIFI:T:nopass;S:${ssid};;` : `WIFI:T:${auth};S:${ssid};P:${pass};;`;
+                dataArray.push(finalData);
             } else if (type === 'whatsapp') {
                 let number = document.getElementById('wa-number').value;
                 const msg = document.getElementById('wa-msg').value;
                 if (!number) return showToast("No HP Kosong");
                 number = number.replace(/[^0-9]/g, '');
                 if (number.startsWith('0')) number = '62' + number.slice(1);
-                finalData = `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
+                dataArray.push(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`);
             }
-            if (!finalData) return showToast("Data Kosong");
-            qrcodeObj.clear();
-            qrcodeObj.makeCode(finalData);
-            document.getElementById('qrcode-container').classList.remove('hidden');
+
+            if (dataArray.length === 0) return showToast("Data Kosong");
+
+            generatedImages = [];
+            generationCount = 0;
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('bulk-info').classList.add('hidden');
+
+            dataArray.forEach((data, index) => {
+                if (format === 'qr') {
+                    const tempDiv = document.createElement('div');
+                    new QRCode(tempDiv, { text: data, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+                    setTimeout(() => {
+                        const canvas = tempDiv.querySelector('canvas');
+                        if (canvas) {
+                            generatedImages[index] = canvas.toDataURL("image/png");
+                        }
+                        checkGenerationComplete(dataArray.length, format);
+                    }, 50);
+                } else {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        JsBarcode(canvas, data, { width: 2, height: 50, displayValue: true, margin: 10 });
+                        generatedImages[index] = canvas.toDataURL("image/png");
+                    } catch(e) {
+                        
+                    }
+                    checkGenerationComplete(dataArray.length, format);
+                }
+            });
+        }
+
+        function checkGenerationComplete(total, format) {
+            generationCount++;
+            if (generationCount === total) {
+                const validImages = generatedImages.filter(img => img);
+                if(validImages.length === 0) return showToast("Gagal menghasilkan kode");
+                
+                const firstImg = document.createElement('img');
+                firstImg.src = validImages[0];
+                firstImg.className = format === 'barcode' ? 'w-full h-auto max-h-[120px] object-contain border-4 border-black rounded-lg bg-white' : 'w-[150px] h-[150px] border-4 border-black rounded-lg';
+                
+                document.getElementById('qrcode').appendChild(firstImg);
+
+                if (total > 1) {
+                    const info = document.getElementById('bulk-info');
+                    info.innerText = `Memproses ${validImages.length} Data`;
+                    info.classList.remove('hidden');
+                }
+                document.getElementById('qrcode-container').classList.remove('hidden');
+            }
         }
 
         function downloadQR() {
-            const qrDiv = document.getElementById('qrcode');
-            const img = qrDiv.querySelector('img');
-            const canvas = qrDiv.querySelector('canvas');
-            let url = '';
-            if (img && img.src) url = img.src;
-            else if (canvas) url = canvas.toDataURL("image/png");
-            else return showToast("QR Code belum siap");
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'qr-tewe.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const validImages = generatedImages.filter(img => img);
+            if (validImages.length === 0) return showToast("Kode belum siap");
+
+            if (validImages.length === 1) {
+                const link = document.createElement('a');
+                link.href = validImages[0];
+                link.download = '1.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                showToast("Menyiapkan File ZIP...");
+                const zip = new JSZip();
+                validImages.forEach((dataUrl, i) => {
+                    const base64 = dataUrl.split(',')[1];
+                    zip.file((i + 1) + '.png', base64, {base64: true});
+                });
+                zip.generateAsync({type:"blob"}).then(function(content) {
+                    saveAs(content, "hasil_generate.zip");
+                });
+            }
         }
 
         function initScanner() { if (!html5QrCode) html5QrCode = new Html5Qrcode("reader"); }
@@ -430,7 +507,6 @@
             )
             .then(() => { isCameraRunning = true; })
             .catch(err => { 
-                console.error(err);
                 document.getElementById('camera-permission-area').classList.remove('hidden');
                 document.getElementById('reader').classList.add('hidden');
                 showToast("Gagal mengakses kamera");
@@ -516,4 +592,3 @@
     </script>
 </body>
 </html>
-
