@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>QR Tools | Tewe Tech</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/favicon/refs/heads/main/qris.png">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,17 +25,16 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        retro: {
+                        fresh: {
                             bg: '#f8fafc',
-                            orange: '#c2410c',
-                            dark: '#1c1917',
-                            border: '#000000'
+                            primary: '#079790',
+                            dark: '#0f172a',
+                            light: '#ffffff'
                         }
                     },
                     boxShadow: {
-                        'retro': '4px 4px 0px 0px rgba(0,0,0,1)',
-                        'retro-hover': '2px 2px 0px 0px rgba(0,0,0,1)',
-                        'retro-xl': '8px 8px 0px 0px rgba(0,0,0,1)',
+                        'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+                        'glow': '0 0 15px rgba(16, 185, 129, 0.3)',
                     }
                 }
             }
@@ -44,261 +43,341 @@
     <style>
         body {
             background-color: #f8fafc;
-            color: #1c1917;
+            color: #0f172a;
             font-family: 'Quicksand', sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #079790;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
         .bg-grid-pattern {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
         }
-        .retro-card {
-            background-color: white;
-            border: 4px solid #000;
-            box-shadow: 8px 8px 0px 0px #000;
-            transition: all 0.2s ease;
-            border-radius: 24px;
+        .fresh-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
         }
-        .bolt {
-            width: 12px; height: 12px; background: #d1d5db; border: 2px solid #000; border-radius: 50%;
-            position: absolute; display: flex; align-items: center; justify-content: center;
-            z-index: 10;
-        }
-        .bolt::after { content: ""; width: 100%; height: 2px; background: #000; transform: rotate(45deg); }
-        
         .active-tab { 
-            background-color: #c2410c !important; 
+            background-color: #079790 !important; 
             color: white !important; 
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px 0px #000 !important;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2) !important;
         }
-        
-        input, select, textarea { 
-            border: 3px solid #000 !important; 
+        input, textarea { 
+            border: 1px solid #e2e8f0 !important; 
             border-radius: 12px !important; 
             font-family: 'Quicksand', sans-serif !important;
-            font-weight: 600 !important;
-            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            font-size: 0.8rem !important;
             background-color: #f8fafc;
+            transition: all 0.2s ease;
         }
-        input:focus, select:focus, textarea:focus {
-            background-color: #fff;
+        input:focus, textarea:focus {
+            background-color: #ffffff;
+            border-color: #079790 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
             outline: none;
         }
-
         #reader { 
-            border: 4px solid #000 !important; 
+            border: 1px solid #e2e8f0 !important; 
             border-radius: 16px; 
             overflow: hidden; 
             width: 100% !important; 
-            box-shadow: 4px 4px 0px 0px #000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         #reader video { object-fit: cover !important; }
-        
-        .btn-retro { 
-            border: 4px solid #000; 
-            box-shadow: 4px 4px 0px 0px #000;
+        .btn-fresh { 
             border-radius: 12px !important; 
             transition: all 0.2s; 
             font-weight: 700;
-            text-transform: uppercase;
         }
-        .btn-retro:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px 0px #000;
+        .btn-fresh:active {
+            transform: scale(0.98);
         }
-
+        .hover-lighter {
+            transition: filter 0.2s ease;
+        }
+        .hover-lighter:hover {
+            filter: brightness(1.15);
+        }
         #toast-container { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        
+        @keyframes shimmer-bg {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer-effect {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer-bg 1.5s infinite linear;
+        }
+        .btn-processing {
+            position: relative;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .btn-processing::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer-btn 1s infinite linear;
+        }
+        @keyframes shimmer-btn {
+            100% { left: 100%; }
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4">
+<body class="flex flex-col items-center justify-start pt-10 px-4 pb-4">
     <div class="bg-grid-pattern"></div>
 
-    <div class="w-full max-w-md mx-auto flex flex-col h-full max-h-[95vh] relative z-10">
-        <div class="text-center mb-4 pt-2">
-            <h1 class="text-4xl font-heading font-black tracking-tighter uppercase italic leading-none mb-1">
-                <span class="text-retro-dark">QR</span> <span class="text-retro-orange">TOOLS</span>
+    <div class="w-full max-w-md mx-auto flex flex-col max-h-[95vh] relative z-10">
+        <div class="text-center mb-6 pt-2">
+            <h1 class="text-2xl font-heading font-black tracking-tight text-fresh-dark mb-1">
+                QR <span class="text-fresh-primary">TOOLS</span>
             </h1>
             <div class="inline-block">
-                <p class="bg-retro-dark text-white text-[9px] font-bold px-3 py-1 rounded-md border-2 border-black uppercase tracking-widest">
-                    UTILITIES GENERATOR <span class="bg-yellow-300 text-black px-2 ml-1 border-l-2 border-black">V2.1</span>
+                <p class="bg-slate-100 text-slate-500 text-[9px] font-bold px-3 py-1.5 rounded-full border border-slate-200 uppercase tracking-wider">
+                    QR & BARCODE GENERATE <span class="bg-fresh-primary text-white px-2 py-0.5 ml-1 rounded-full">V2.8</span>
                 </p>
             </div>
         </div>
 
-        <div class="flex gap-3 mb-4 px-1">
-            <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest active-tab bg-white">
-                <i class="fas fa-plus-circle mr-2"></i>BUAT KODE
+        <div class="flex gap-2 mb-4 px-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+            <button id="btn-tab-gen" onclick="switchTab('gen')" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold tracking-wide active-tab bg-transparent text-slate-500 transition-all hover-lighter">
+                <i class="fas fa-plus-circle mr-1.5"></i> Buat Kode
             </button>
-            <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-3 btn-retro text-[10px] tracking-widest bg-white hover:bg-slate-50">
-                <i class="fas fa-qrcode mr-2"></i>PINDAI
+            <button id="btn-tab-scan" onclick="switchTab('scan')" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold tracking-wide bg-transparent text-slate-500 hover:bg-white hover:shadow-sm transition-all hover-lighter">
+                <i class="fas fa-qrcode mr-1.5"></i> Pindai
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto px-1 pb-2 no-scrollbar">
-            <div id="section-generator" class="retro-card p-6 relative bg-white">
-                <div class="bolt top-3 left-3"></div><div class="bolt top-3 right-3"></div>
-                <div class="bolt bottom-3 left-3"></div><div class="bolt bottom-3 right-3"></div>
-
-                <div class="space-y-4 mt-2">
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Tipe Konten</label>
-                            <select id="qr-type" onchange="changeInputType()" class="w-full p-3 font-bold cursor-pointer">
-                                <option value="link">Link / Teks</option>
-                                <option value="wifi">Wi-Fi</option>
-                                <option value="whatsapp">WhatsApp</option>
-                            </select>
+        <div class="flex-1 overflow-y-auto px-1 pb-2">
+            <div id="section-generator" class="fresh-card p-6">
+                <div class="space-y-4">
+                    
+                    <div class="flex gap-3 relative z-30">
+                        <div class="flex-1 relative">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Tipe Konten</label>
+                            <button id="btn-select-type" onclick="toggleDropdown('dropdown-type')" class="w-full p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-left flex justify-between items-center text-slate-700 font-medium text-xs hover:border-[#079790] transition-all">
+                                <span id="label-select-type" class="flex items-center"><i class="fas fa-link text-fresh-primary w-4 text-center mr-1"></i> Link/Teks</span>
+                                <i class="fas fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </button>
+                            <div id="dropdown-type" class="hidden absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-soft border border-slate-100 p-2 z-50">
+                                <div onclick="selectType('link', 'Link/Teks', 'fa-link')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors group">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-50 text-fresh-primary flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-link"></i></div>
+                                    <div><p class="text-xs font-bold text-slate-700">Link / Teks</p></div>
+                                </div>
+                                <div onclick="selectType('wifi', 'Wi-Fi', 'fa-wifi')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors group">
+                                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-wifi"></i></div>
+                                    <div><p class="text-xs font-bold text-slate-700">Wi-Fi</p></div>
+                                </div>
+                                <div onclick="selectType('whatsapp', 'WhatsApp', 'fa-whatsapp')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors group">
+                                    <div class="w-7 h-7 rounded-lg bg-green-50 text-green-500 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fab fa-whatsapp"></i></div>
+                                    <div><p class="text-xs font-bold text-slate-700">WhatsApp</p></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Format Output</label>
-                            <select id="output-format" class="w-full p-3 font-bold cursor-pointer">
-                                <option value="qr">QR Code</option>
-                                <option value="barcode">Barcode</option>
-                            </select>
+
+                        <div class="flex-1 relative z-20">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Format Output</label>
+                            <button id="btn-select-format" onclick="toggleDropdown('dropdown-format')" class="w-full p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-left flex justify-between items-center text-slate-700 font-medium text-xs hover:border-[#079790] transition-all">
+                                <span id="label-select-format" class="flex items-center"><i class="fas fa-qrcode text-fresh-primary w-4 text-center mr-1"></i> QR Code</span>
+                                <i class="fas fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </button>
+                            <div id="dropdown-format" class="hidden absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-soft border border-slate-100 p-2 z-50">
+                                <div onclick="selectFormat('qr', 'QR Code', 'fa-qrcode')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors group">
+                                    <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-qrcode"></i></div>
+                                    <p class="text-xs font-bold text-slate-700">QR Code</p>
+                                </div>
+                                <div onclick="selectFormat('barcode', 'Barcode', 'fa-barcode')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors group">
+                                    <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-barcode"></i></div>
+                                    <p class="text-xs font-bold text-slate-700">Barcode</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div id="input-group-link">
-                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1 flex justify-between">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1 flex justify-between items-center">
                             <span>URL / Teks</span>
-                            <span class="text-retro-orange opacity-80">(Bisa multi baris)</span>
+                            <span class="text-fresh-primary text-[8px] bg-emerald-50 px-2 py-0.5 rounded-full">Bisa Multi Baris (Banyak Sekaligus)</span>
                         </label>
-                        <textarea id="input-text" placeholder="Data 1&#10;Data 2&#10;Data 3..." class="w-full p-3 h-24 whitespace-pre-wrap"></textarea>
+                        <textarea id="input-text" placeholder="Masukkan URL atau teks di sini..." class="w-full p-3 h-28 whitespace-pre-wrap text-slate-700"></textarea>
                     </div>
 
                     <div id="input-group-wifi" class="hidden space-y-3">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Nama Jaringan (SSID)</label>
-                            <input type="text" id="wifi-ssid" placeholder="MyWifi" class="w-full p-3">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Nama Jaringan (SSID)</label>
+                            <input type="text" id="wifi-ssid" placeholder="Contoh: Wifi_Rumah" class="w-full p-3 text-slate-700">
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Keamanan</label>
-                            <select id="wifi-auth" onchange="toggleWifiPass()" class="w-full p-3">
-                                <option value="WPA">WPA/WPA2</option>
-                                <option value="WEP">WEP</option>
-                                <option value="nopass">Tanpa Sandi</option>
-                            </select>
+                        <div class="relative z-10">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Tipe Keamanan</label>
+                            <button id="btn-select-auth" onclick="toggleDropdown('dropdown-auth')" class="w-full p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-left flex justify-between items-center text-slate-700 font-medium text-xs hover:border-[#079790] transition-all">
+                                <span id="label-select-auth">WPA/WPA2</span>
+                                <i class="fas fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </button>
+                            <div id="dropdown-auth" class="hidden absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-soft border border-slate-100 p-2 z-50">
+                                <div onclick="selectAuth('WPA', 'WPA/WPA2')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer"><p class="text-xs font-bold text-slate-700">WPA/WPA2</p></div>
+                                <div onclick="selectAuth('WEP', 'WEP')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer"><p class="text-xs font-bold text-slate-700">WEP</p></div>
+                                <div onclick="selectAuth('nopass', 'Tanpa Sandi')" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer"><p class="text-xs font-bold text-slate-700">Tanpa Sandi</p></div>
+                            </div>
                         </div>
-                        <input type="text" id="wifi-pass" placeholder="Password Wifi" class="w-full p-3">
+                        <input type="text" id="wifi-pass" placeholder="Password Wifi" class="w-full p-3 text-slate-700">
                     </div>
 
                     <div id="input-group-whatsapp" class="hidden space-y-3">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Nomor WhatsApp</label>
-                            <input type="text" id="wa-number" placeholder="08..." class="w-full p-3">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Nomor WhatsApp</label>
+                            <input type="text" id="wa-number" placeholder="Contoh: 08123456789" class="w-full p-3 text-slate-700">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 ml-1">Pesan</label>
-                            <textarea id="wa-msg" placeholder="Halo..." class="w-full p-3 h-20"></textarea>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 ml-1">Pesan Otomatis</label>
+                            <textarea id="wa-msg" placeholder="Halo, saya ingin bertanya..." class="w-full p-3 h-20 text-slate-700"></textarea>
                         </div>
                     </div>
 
-                    <button onclick="generateQR()" class="w-full py-3 bg-retro-orange text-white btn-retro mt-4 hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
-                        GENERATE SEKARANG
-                    </button>
-                </div>
-
-                <div id="qrcode-container" class="mt-6 flex flex-col items-center hidden border-t-4 border-black border-dashed pt-6">
-                    <div class="bg-slate-100 p-4 border-4 border-black shadow-retro rounded-xl mb-3 flex justify-center w-full min-h-[160px] items-center">
-                        <div id="qrcode" class="flex justify-center w-full"></div>
-                    </div>
-                    <div id="bulk-info" class="text-[10px] font-bold uppercase tracking-widest mb-4 bg-yellow-300 px-3 py-1 border-2 border-black rounded hidden"></div>
-                    <button onclick="downloadQR()" class="px-6 py-2 bg-retro-dark text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] w-full">
-                        <i class="fas fa-download mr-2"></i>UNDUH HASIL
+                    <button id="btn-generate" onclick="generateQR()" class="w-full py-3.5 bg-fresh-primary hover-lighter text-white btn-fresh mt-6 shadow-glow text-[11px] uppercase tracking-wide">
+                        Buat
                     </button>
                 </div>
             </div>
 
             <div id="section-scanner" class="hidden space-y-4">
-                <div class="flex justify-center gap-3">
-                    <button onclick="setScanMode('camera')" id="btn-mode-cam" class="flex-1 py-2 btn-retro bg-retro-orange text-white text-[10px]">KAMERA</button>
-                    <button onclick="setScanMode('file')" id="btn-mode-file" class="flex-1 py-2 btn-retro bg-white text-black text-[10px]">UPLOAD FILE</button>
+                <div class="flex justify-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <button onclick="setScanMode('camera')" id="btn-mode-cam" class="flex-1 py-2 btn-fresh bg-white text-fresh-primary shadow-sm text-[11px] hover-lighter">Kamera</button>
+                    <button onclick="setScanMode('file')" id="btn-mode-file" class="flex-1 py-2 btn-fresh bg-transparent text-slate-500 text-[11px] hover-lighter">Unggah File</button>
                 </div>
 
                 <div id="scan-camera-area" class="w-full relative">
-                    <div id="camera-permission-area" class="retro-card p-8 flex flex-col items-center justify-center bg-white space-y-4 text-center">
-                        <div class="w-16 h-16 bg-slate-100 border-4 border-black rounded-full flex items-center justify-center text-retro-orange mb-2">
-                            <i class="fas fa-camera text-2xl"></i>
+                    <div id="camera-permission-area" class="fresh-card p-10 flex flex-col items-center justify-center space-y-4 text-center">
+                        <div class="w-12 h-12 bg-emerald-50 text-fresh-primary rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-camera text-xl"></i>
                         </div>
-                        <p class="text-[10px] font-bold uppercase tracking-wider">Izin kamera diperlukan</p>
-                        <button onclick="requestCamera()" class="px-5 py-2 bg-retro-dark text-white text-[10px] btn-retro">IZINKAN AKSES</button>
+                        <p class="text-[11px] font-bold text-slate-600">Izin kamera diperlukan</p>
+                        <button id="btn-request-cam" onclick="requestCamera()" class="px-6 py-2.5 bg-fresh-dark hover-lighter text-white text-[11px] btn-fresh shadow-md">Izinkan Akses</button>
                     </div>
-                    <div id="reader" class="hidden bg-black"></div>
+                    <div id="reader" class="hidden bg-black rounded-2xl"></div>
                 </div>
 
                 <div id="scan-file-area" class="hidden">
-                    <div class="retro-card p-8 border-dashed border-4 flex flex-col items-center justify-center bg-white relative group cursor-pointer hover:bg-slate-50 transition">
+                    <div id="file-drop-area" class="fresh-card p-10 border-dashed border-2 border-slate-300 flex flex-col items-center justify-center relative group cursor-pointer hover:bg-slate-50 transition-colors">
                         <input type="file" id="qr-input-file" accept="image/*" class="hidden" onchange="scanFile(this)">
                         <label for="qr-input-file" class="cursor-pointer text-center w-full">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-retro-orange mb-3 group-hover:scale-110 transition-transform"></i>
-                            <div class="text-[10px] font-bold uppercase tracking-widest">Pilih Gambar</div>
+                            <div class="w-12 h-12 bg-emerald-50 text-fresh-primary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-cloud-upload-alt text-xl"></i>
+                            </div>
+                            <div class="text-[11px] font-bold text-slate-600">Pilih Gambar QR/Barcode</div>
                         </label>
                     </div>
                 </div>
 
-                <div id="scan-result" class="hidden retro-card p-5 bg-white relative">
-                    <div class="bolt top-2 left-2"></div><div class="bolt top-2 right-2"></div>
-                    
-                    <div id="wifi-result-card" class="hidden flex flex-col w-full pt-2">
-                        <div class="flex items-center gap-3 mb-4 border-b-4 border-black pb-3">
-                            <div class="w-12 h-12 bg-blue-500 rounded-lg border-2 border-black flex items-center justify-center text-white shadow-retro">
-                                <i class="fas fa-wifi text-xl"></i>
+                <div id="scan-result" class="hidden fresh-card p-5 relative">
+                    <div id="wifi-result-card" class="hidden flex flex-col w-full">
+                        <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+                            <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-wifi text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-xs font-bold uppercase">Wi-Fi Terdeteksi</h3>
-                                <p class="text-[8px] font-mono">Network Configuration</p>
+                                <h3 class="text-xs font-bold text-slate-800">Jaringan Wi-Fi</h3>
+                                <p class="text-[9px] text-slate-500 font-mono">Konfigurasi Terdeteksi</p>
                             </div>
                         </div>
                         
-                        <div class="space-y-3 mb-4">
-                            <div class="bg-slate-50 p-2 border-2 border-black rounded-lg">
-                                <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">SSID</span>
-                                <span id="res-ssid" class="font-bold text-sm block"></span>
+                        <div class="space-y-3 mb-5">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <span class="block text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">SSID</span>
+                                <span id="res-ssid" class="font-bold text-slate-700 text-xs block"></span>
                             </div>
-                            <div id="res-pass-container" class="bg-slate-50 p-2 border-2 border-black rounded-lg flex justify-between items-center">
+                            <div id="res-pass-container" class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex justify-between items-center">
                                 <div>
-                                    <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">PASSWORD</span>
-                                    <span id="res-pass" class="font-mono font-bold text-sm block"></span>
+                                    <span class="block text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Password</span>
+                                    <span id="res-pass" class="font-mono font-bold text-slate-700 text-xs block"></span>
                                 </div>
-                                <button onclick="copyWifiPass()" class="px-2 py-1 bg-white border-2 border-black rounded text-[8px] font-bold uppercase hover:bg-yellow-200">Salin</button>
+                                <button onclick="copyWifiPass()" class="px-3 py-1.5 bg-white hover-lighter border border-slate-200 shadow-sm rounded-lg text-[9px] font-bold text-slate-600 transition-colors">Salin</button>
                             </div>
-                            <div class="bg-slate-50 p-2 border-2 border-black rounded-lg">
-                                <span class="block text-[8px] font-bold uppercase text-slate-400 mb-1">TIPE KEAMANAN</span>
-                                <span id="res-auth" class="font-bold text-xs block"></span>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <span class="block text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Keamanan</span>
+                                <span id="res-auth" class="font-bold text-slate-700 text-[11px] block"></span>
                             </div>
                         </div>
-                        <button id="btn-connect-wifi" class="w-full py-3 bg-blue-600 text-white btn-retro text-[10px] tracking-widest hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
-                            HUBUNGKAN SEKARANG
+                        <button id="btn-connect-wifi" class="w-full py-3 bg-blue-500 hover-lighter text-white btn-fresh text-[11px] shadow-md shadow-blue-500/20 uppercase tracking-wide">
+                            Hubungkan Sekarang
                         </button>
                     </div>
 
-                    <div id="general-result-card" class="hidden pt-2">
-                        <p class="text-retro-orange font-bold text-[10px] uppercase mb-2 tracking-widest bg-yellow-100 inline-block px-2 border-2 border-black">HASIL PINDAI</p>
-                        <div id="scan-result-text" class="p-3 bg-slate-100 border-2 border-black rounded-lg font-mono text-[10px] break-all mb-4 h-24 overflow-y-auto"></div>
+                    <div id="general-result-card" class="hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-fresh-primary font-bold text-[11px] uppercase tracking-wide">Hasil Pindai</p>
+                            <span class="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Teks / URL</span>
+                        </div>
+                        <div id="scan-result-text" class="p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px] text-slate-700 break-all mb-4 h-24 overflow-y-auto"></div>
                         <div class="flex gap-2">
-                            <a id="scan-result-link" href="#" target="_blank" class="flex-1 text-center py-2 bg-blue-500 text-white btn-retro text-[10px] hidden hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">BUKA LINK</a>
-                            <button onclick="copyResult()" class="flex-1 py-2 bg-retro-dark text-white btn-retro text-[10px] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">SALIN TEKS</button>
+                            <a id="scan-result-link" href="#" target="_blank" class="flex-1 text-center py-2.5 bg-blue-500 hover-lighter text-white btn-fresh text-[11px] hidden shadow-md shadow-blue-500/20">Buka Link</a>
+                            <button onclick="copyResult()" class="flex-1 py-2.5 bg-fresh-dark hover-lighter text-white btn-fresh text-[11px] shadow-md">Salin Teks</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-auto py-3 text-center text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            © 2026 Tewe Tech
+        <footer class="mt-4 py-4 text-center flex justify-center w-full">
+            <a href="https://wa.me/6282323624177" target="_blank" class="inline-block hover:no-underline">
+                <p class="bg-slate-100 text-slate-500 text-[9px] font-bold px-3 py-1.5 rounded-full border border-slate-200 uppercase tracking-wider hover:bg-slate-200 transition-colors">
+                    © 2026 <span class="bg-fresh-primary text-white px-2 py-0.5 ml-1 rounded-full">TEWE TECH</span>
+                </p>
+            </a>
         </footer>
     </div>
 
+    <div id="qr-modal" class="fixed inset-0 z-40 flex items-center justify-center hidden bg-slate-900/40 backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-white p-6 rounded-3xl shadow-soft w-full max-w-sm relative flex flex-col items-center transform scale-100 transition-transform">
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 text-slate-500 hover-lighter rounded-full transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-base font-heading font-bold text-slate-800 mb-6 mt-2">Kode Berhasil Dibuat</h3>
+            
+            <div class="bg-slate-50 p-4 border border-slate-100 rounded-2xl mb-4 w-full flex justify-center items-center min-h-[180px]">
+                <div id="qr-loading" class="w-[160px] h-[160px] shimmer-effect rounded-xl hidden"></div>
+                <div id="qrcode" class="flex justify-center w-full"></div>
+            </div>
+            
+            <div id="bulk-info" class="text-[11px] font-bold text-emerald-600 mb-5 bg-emerald-50 px-4 py-1.5 rounded-full hidden"></div>
+            
+            <button onclick="downloadQR()" class="w-full py-3 bg-fresh-dark hover-lighter text-white btn-fresh text-[11px] shadow-md flex justify-center items-center">
+                <i class="fas fa-download mr-2"></i> Unduh Hasil
+            </button>
+        </div>
+    </div>
+
     <div id="toast-container" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 w-full max-w-[300px] text-center">
-        <div class="bg-retro-dark text-white px-4 py-3 rounded-xl shadow-retro-xl border-4 border-white text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-3">
-            <i class="fas fa-info-circle text-retro-orange text-lg"></i>
+        <div class="bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-lg text-[10px] font-bold flex items-center justify-center gap-3">
+            <i class="fas fa-info-circle text-fresh-primary text-base"></i>
             <span id="toast-msg">Notifikasi</span>
         </div>
     </div>
@@ -309,6 +388,10 @@
         let currentWifiPass = "";
         let generatedImages = [];
         let generationCount = 0;
+        
+        let currentType = 'link';
+        let currentFormat = 'qr';
+        let currentAuth = 'WPA';
 
         function showToast(msg) {
             const container = document.getElementById('toast-container');
@@ -328,34 +411,40 @@
             if (tab === 'gen') {
                 genSec.classList.remove('hidden');
                 scanSec.classList.add('hidden');
-                btnGen.classList.add('active-tab');
+                btnGen.classList.add('active-tab', 'bg-transparent');
+                btnGen.classList.remove('bg-transparent', 'text-slate-500', 'hover:bg-white', 'hover:shadow-sm');
                 btnScan.classList.remove('active-tab');
+                btnScan.classList.add('bg-transparent', 'text-slate-500', 'hover:bg-white', 'hover:shadow-sm');
                 stopCamera();
             } else {
                 genSec.classList.add('hidden');
                 scanSec.classList.remove('hidden');
                 btnGen.classList.remove('active-tab');
+                btnGen.classList.add('bg-transparent', 'text-slate-500', 'hover:bg-white', 'hover:shadow-sm');
                 btnScan.classList.add('active-tab');
+                btnScan.classList.remove('bg-transparent', 'text-slate-500', 'hover:bg-white', 'hover:shadow-sm');
                 setScanMode('camera'); 
             }
         }
 
-        function toggleWifiPass() {
-            const auth = document.getElementById('wifi-auth').value;
-            const passInput = document.getElementById('wifi-pass');
-            if(auth === 'nopass') {
-                passInput.classList.add('hidden');
-                passInput.value = '';
-            } else {
-                passInput.classList.remove('hidden');
-            }
+        function toggleDropdown(id) {
+            document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
+                if (el.id !== id) el.classList.add('hidden');
+            });
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
         }
 
-        function changeInputType() {
-            const type = document.getElementById('qr-type').value;
+        function selectType(type, label, icon) {
+            currentType = type;
+            const isFab = icon === 'fa-whatsapp' ? 'fab' : 'fas';
+            document.getElementById('label-select-type').innerHTML = `<i class="${isFab} ${icon} text-fresh-primary w-4 text-center mr-1"></i> ${label}`;
+            document.getElementById('dropdown-type').classList.add('hidden');
+            
             document.getElementById('input-group-link').classList.add('hidden');
             document.getElementById('input-group-wifi').classList.add('hidden');
             document.getElementById('input-group-whatsapp').classList.add('hidden');
+            
             if (type === 'link') document.getElementById('input-group-link').classList.remove('hidden');
             else if (type === 'wifi') {
                 document.getElementById('input-group-wifi').classList.remove('hidden');
@@ -364,9 +453,44 @@
             else if (type === 'whatsapp') document.getElementById('input-group-whatsapp').classList.remove('hidden');
         }
 
+        function selectFormat(format, label, icon) {
+            currentFormat = format;
+            document.getElementById('label-select-format').innerHTML = `<i class="fas ${icon} text-fresh-primary w-4 text-center mr-1"></i> ${label}`;
+            document.getElementById('dropdown-format').classList.add('hidden');
+        }
+
+        function selectAuth(auth, label) {
+            currentAuth = auth;
+            document.getElementById('label-select-auth').innerText = label;
+            document.getElementById('dropdown-auth').classList.add('hidden');
+            toggleWifiPass();
+        }
+
+        function toggleWifiPass() {
+            const passInput = document.getElementById('wifi-pass');
+            if(currentAuth === 'nopass') {
+                passInput.classList.add('hidden');
+                passInput.value = '';
+            } else {
+                passInput.classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#btn-select-type') && !e.target.closest('#dropdown-type')) {
+                document.getElementById('dropdown-type')?.classList.add('hidden');
+            }
+            if (!e.target.closest('#btn-select-format') && !e.target.closest('#dropdown-format')) {
+                document.getElementById('dropdown-format')?.classList.add('hidden');
+            }
+            if (!e.target.closest('#btn-select-auth') && !e.target.closest('#dropdown-auth')) {
+                document.getElementById('dropdown-auth')?.classList.add('hidden');
+            }
+        });
+
         function generateQR() {
-            const type = document.getElementById('qr-type').value;
-            const format = document.getElementById('output-format').value;
+            const type = currentType;
+            const format = currentFormat;
             let dataArray = [];
 
             if (type === 'link') {
@@ -375,7 +499,7 @@
             } else if (type === 'wifi') {
                 const ssid = document.getElementById('wifi-ssid').value.trim();
                 const pass = document.getElementById('wifi-pass').value;
-                const auth = document.getElementById('wifi-auth').value;
+                const auth = currentAuth;
                 if (!ssid) return showToast("SSID Kosong");
                 let finalData = (auth === 'nopass') ? `WIFI:T:nopass;S:${ssid};;` : `WIFI:T:${auth};S:${ssid};P:${pass};;`;
                 dataArray.push(finalData);
@@ -390,54 +514,87 @@
 
             if (dataArray.length === 0) return showToast("Data Kosong");
 
-            generatedImages = [];
-            generationCount = 0;
-            document.getElementById('qrcode').innerHTML = '';
-            document.getElementById('bulk-info').classList.add('hidden');
+            const btnGen = document.getElementById('btn-generate');
+            btnGen.classList.add('btn-processing');
+            btnGen.innerText = 'MEMPROSES...';
 
-            dataArray.forEach((data, index) => {
-                if (format === 'qr') {
-                    const tempDiv = document.createElement('div');
-                    new QRCode(tempDiv, { text: data, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
-                    setTimeout(() => {
-                        const canvas = tempDiv.querySelector('canvas');
-                        if (canvas) {
+            document.getElementById('qr-modal').classList.remove('hidden');
+            document.getElementById('qrcode').classList.add('hidden');
+            document.getElementById('qr-loading').classList.remove('hidden');
+            document.getElementById('bulk-info').classList.add('hidden');
+            document.getElementById('qrcode').innerHTML = '';
+
+            setTimeout(() => {
+                generatedImages = [];
+                generationCount = 0;
+
+                dataArray.forEach((data, index) => {
+                    if (format === 'qr') {
+                        const tempDiv = document.createElement('div');
+                        new QRCode(tempDiv, { 
+                            text: data, 
+                            width: 160, 
+                            height: 160, 
+                            colorDark: "#000000", 
+                            colorLight: "rgba(255,255,255,0)", 
+                            correctLevel: QRCode.CorrectLevel.H 
+                        });
+                        setTimeout(() => {
+                            const canvas = tempDiv.querySelector('canvas');
+                            if (canvas) {
+                                generatedImages[index] = canvas.toDataURL("image/png");
+                            }
+                            checkGenerationComplete(dataArray.length, format);
+                        }, 50);
+                    } else {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            JsBarcode(canvas, data, { 
+                                width: 2, 
+                                height: 60, 
+                                displayValue: true, 
+                                margin: 10, 
+                                lineColor: "#000000",
+                                background: "rgba(255,255,255,0)"
+                            });
                             generatedImages[index] = canvas.toDataURL("image/png");
-                        }
+                        } catch(e) {}
                         checkGenerationComplete(dataArray.length, format);
-                    }, 50);
-                } else {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        JsBarcode(canvas, data, { width: 2, height: 50, displayValue: true, margin: 10 });
-                        generatedImages[index] = canvas.toDataURL("image/png");
-                    } catch(e) {
-                        
                     }
-                    checkGenerationComplete(dataArray.length, format);
-                }
-            });
+                });
+
+                btnGen.classList.remove('btn-processing');
+                btnGen.innerText = 'GENERATE SEKARANG';
+            }, 800);
         }
 
         function checkGenerationComplete(total, format) {
             generationCount++;
             if (generationCount === total) {
                 const validImages = generatedImages.filter(img => img);
-                if(validImages.length === 0) return showToast("Gagal menghasilkan kode");
+                if(validImages.length === 0) {
+                    document.getElementById('qr-modal').classList.add('hidden');
+                    return showToast("Gagal menghasilkan kode");
+                }
                 
                 const firstImg = document.createElement('img');
                 firstImg.src = validImages[0];
-                firstImg.className = format === 'barcode' ? 'w-full h-auto max-h-[120px] object-contain border-4 border-black rounded-lg bg-white' : 'w-[150px] h-[150px] border-4 border-black rounded-lg';
+                firstImg.className = format === 'barcode' ? 'w-full h-auto max-h-[140px] object-contain rounded-lg' : 'w-[160px] h-[160px] rounded-xl';
                 
                 document.getElementById('qrcode').appendChild(firstImg);
 
                 if (total > 1) {
                     const info = document.getElementById('bulk-info');
-                    info.innerText = `Memproses ${validImages.length} Data`;
+                    info.innerText = `Memproses ${validImages.length} Data Sekaligus`;
                     info.classList.remove('hidden');
                 }
-                document.getElementById('qrcode-container').classList.remove('hidden');
+                document.getElementById('qr-loading').classList.add('hidden');
+                document.getElementById('qrcode').classList.remove('hidden');
             }
+        }
+
+        function closeModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
         }
 
         function downloadQR() {
@@ -447,7 +604,7 @@
             if (validImages.length === 1) {
                 const link = document.createElement('a');
                 link.href = validImages[0];
-                link.download = '1.png';
+                link.download = 'QR_TeweTech.png';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -456,7 +613,7 @@
                 const zip = new JSZip();
                 validImages.forEach((dataUrl, i) => {
                     const base64 = dataUrl.split(',')[1];
-                    zip.file((i + 1) + '.png', base64, {base64: true});
+                    zip.file(`QR_${i + 1}.png`, base64, {base64: true});
                 });
                 zip.generateAsync({type:"blob"}).then(function(content) {
                     saveAs(content, "hasil_generate.zip");
@@ -474,26 +631,34 @@
             if (mode === 'camera') {
                 camArea.classList.remove('hidden');
                 fileArea.classList.add('hidden');
-                btnCam.classList.add('bg-retro-orange', 'text-white');
-                btnCam.classList.remove('bg-white', 'text-black');
-                btnFile.classList.remove('bg-retro-orange', 'text-white');
-                btnFile.classList.add('bg-white', 'text-black');
+                btnCam.classList.add('bg-white', 'text-fresh-primary', 'shadow-sm');
+                btnCam.classList.remove('bg-transparent', 'text-slate-500');
+                btnFile.classList.remove('bg-white', 'text-fresh-primary', 'shadow-sm');
+                btnFile.classList.add('bg-transparent', 'text-slate-500');
             } else {
                 camArea.classList.add('hidden');
                 fileArea.classList.remove('hidden');
-                btnFile.classList.add('bg-retro-orange', 'text-white');
-                btnFile.classList.remove('bg-white', 'text-black');
-                btnCam.classList.remove('bg-retro-orange', 'text-white');
-                btnCam.classList.add('bg-white', 'text-black');
+                btnFile.classList.add('bg-white', 'text-fresh-primary', 'shadow-sm');
+                btnFile.classList.remove('bg-transparent', 'text-slate-500');
+                btnCam.classList.remove('bg-white', 'text-fresh-primary', 'shadow-sm');
+                btnCam.classList.add('bg-transparent', 'text-slate-500');
                 stopCamera();
             }
             document.getElementById('scan-result').classList.add('hidden');
         }
 
         function requestCamera() {
-            document.getElementById('camera-permission-area').classList.add('hidden');
-            document.getElementById('reader').classList.remove('hidden');
-            startCamera();
+            const btnCamReq = document.getElementById('btn-request-cam');
+            btnCamReq.classList.add('btn-processing');
+            btnCamReq.innerText = 'MEMPROSES...';
+
+            setTimeout(() => {
+                document.getElementById('camera-permission-area').classList.add('hidden');
+                document.getElementById('reader').classList.remove('hidden');
+                btnCamReq.classList.remove('btn-processing');
+                btnCamReq.innerText = 'Izinkan Akses';
+                startCamera();
+            }, 500);
         }
 
         function startCamera() {
@@ -501,7 +666,7 @@
             initScanner();
             html5QrCode.start(
                 { facingMode: "environment" }, 
-                { fps: 15, qrbox: (width, height) => { return { width: width * 0.8, height: width * 0.8 }; } }, 
+                { fps: 15, qrbox: (width, height) => { return { width: width * 0.75, height: width * 0.75 }; } }, 
                 onScanSuccess, 
                 onScanFailure
             )
@@ -525,8 +690,23 @@
 
         function scanFile(input) {
             if (input.files.length === 0) return;
+            
+            const dropArea = document.getElementById('file-drop-area');
+            dropArea.classList.add('btn-processing');
+            
             initScanner();
-            html5QrCode.scanFile(input.files[0], true).then(onScanSuccess).catch(err => { showToast("Gagal scan file"); });
+            
+            setTimeout(() => {
+                html5QrCode.scanFile(input.files[0], true)
+                    .then(res => {
+                        dropArea.classList.remove('btn-processing');
+                        onScanSuccess(res);
+                    })
+                    .catch(err => { 
+                        dropArea.classList.remove('btn-processing');
+                        showToast("Gagal scan file"); 
+                    });
+            }, 800);
         }
 
         function onScanSuccess(decodedText) {
